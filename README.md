@@ -39,7 +39,7 @@ Claude Code CLIを初心者でも簡単に使えるようにするランチャ�
 または
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/claude-code-launcher.git
+git clone https://github.com/Hachibei0321/claude-code-launcher.git
 ```
 
 ### 2. 好きな場所に解凍
