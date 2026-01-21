@@ -1,0 +1,32 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(python *)",
+            "Bash(python3 *)",
+            "Bash(pytest *)",
+            "Bash(pip *)",
+            "Bash(git status)",
+            "Bash(git diff *)",
+            "Bash(git log *)",
+            "Bash(git add *)",
+            "Bash(git commit *)",
+            "Bash(ls *)",
+            "Bash(dir *)",
+            "Bash(cat *)",
+            "Bash(type *)",
+            "Bash(find *)",
+            "Bash(grep *)",
+            "Read(*)"
+        ],
+        "deny": [
+            "Bash(rm -rf *)",
+            "Bash(del /s *)",
+            "Bash(format *)"
+        ]
+    },
+    "env": {
+        "PYTHONIOENCODING": "utf-8",
+        "ANTHROPIC_AUTH_TOKEN": "YOUR_ZAI_API_KEY_HERE",
+        "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic"
+    }
+}
