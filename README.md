@@ -5,7 +5,9 @@
 Claude Code CLIを初心者でも簡単に使えるようにするランチャーツールです。
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
+![Platform](https://img.shields.io/badge/platform-Windows_Only-blue.svg)
+
+> ⚠️ **Windows専用です！** Mac/Linuxには対応していません。（対応版のPull Request歓迎！）
 
 ---
 
