@@ -54,7 +54,7 @@ def main():
         background_color='#1a1a2e' # Match body background for seamless look
     )
     
-    webview.start(debug=True) # debug=True allows right-click inspect
+    webview.start(debug=False) # Disable debug mode for production
 
 if __name__ == '__main__':
     main()
