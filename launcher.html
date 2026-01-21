@@ -565,12 +565,25 @@
             }
         });
 
-        // Show command to run
+        // Show command to run or execute it
         function showCommand(filename) {
-            const toast = document.getElementById('toast');
-            toast.textContent = `▶️ Run: ${filename}`;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            // Check if running inside pywebview
+            if (window.pywebview) {
+                // Execute via Python
+                window.pywebview.api.run_command(filename);
+
+                // Show toast
+                const toast = document.getElementById('toast');
+                toast.textContent = `🚀 Starting: ${filename}`;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            } else {
+                // Browser fallback (just show info)
+                const toast = document.getElementById('toast');
+                toast.textContent = `▶️ Run: ${filename}`;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
         }
 
         // Copy to clipboard

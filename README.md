@@ -29,6 +29,7 @@ Claude Code CLIを初心者でも簡単に使えるようにするランチャ�
 - Windows 10/11
 - [Claude Code CLI](https://claude.ai/code) がインストール済み
 - [Git](https://git-scm.com/) がインストール済み
+- [Python](https://www.python.org/) 3.7以降 (ランチャーUI用)
 
 ---
 
