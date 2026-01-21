@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Cheat Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(233, 69, 96, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e94560;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 10px 5px;
+            vertical-align: top;
+        }
+
+        td:first-child {
+            width: 45%;
+        }
+
+        /* Non-copyable keyboard shortcuts */
+        .key {
+            background: linear-gradient(145deg, #2a2a4a, #1a1a3a);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #ff6b6b;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Copyable commands */
+        .cmd {
+            background: linear-gradient(145deg, #2a2a4a, #1a1a3a);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #4CAF50;
+            display: inline-block;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .cmd::before {
+            content: "📋";
+            margin-right: 5px;
+            font-size: 0.75rem;
+        }
+
+        .cmd:hover {
+            background: linear-gradient(145deg, #3a3a5a, #2a2a4a);
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
+            border-color: #4CAF50;
+        }
+
+        .cmd:active {
+            transform: scale(0.95);
+        }
+
+        .desc {
+            color: #c0c0c0;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        .tips {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(255, 107, 107, 0.1));
+            border-left: 4px solid #e94560;
+        }
+
+        .mode-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .mode-normal {
+            background: #4CAF50;
+        }
+
+        .mode-auto {
+            background: #FF9800;
+        }
+
+        .mode-plan {
+            background: #2196F3;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #606060;
+            font-size: 0.85rem;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Claude Code Cheat Sheet</h1>
+            <p class="subtitle">Essential shortcuts and commands at your fingertips</p>
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="key" style="font-size: 0.75rem;">Key</span>
+                    <span>= Keyboard shortcut</span>
+                </div>
+                <div class="legend-item">
+                    <span class="cmd" style="font-size: 0.75rem; padding: 2px 6px;">/cmd</span>
+                    <span>= Click to copy!</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- Keyboard Shortcuts -->
+            <div class="card">
+                <h2>⌨️ Keyboard Shortcuts</h2>
+                <table>
+                    <tr>
+                        <td><span class="key">Shift+Tab</span></td>
+                        <td class="desc">Mode switch (Normal→Auto→Plan)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="key">Ctrl+C</span></td>
+                        <td class="desc">Cancel (2x to exit)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="key">Ctrl+L</span></td>
+                        <td class="desc">Clear screen</td>
+                    </tr>
+                    <tr>
+                        <td><span class="key">Ctrl+V</span></td>
+                        <td class="desc">Paste image/screenshot</td>
+                    </tr>
+                    <tr>
+                        <td><span class="key">Ctrl+R</span></td>
+                        <td class="desc">Search history</td>
+                    </tr>
+                    <tr>
+                        <td><span class="key">Esc Esc</span></td>
+                        <td class="desc">Rewind conversation</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Slash Commands -->
+            <div class="card">
+                <h2>💬 Slash Commands</h2>
+                <table>
+                    <tr>
+                        <td><span class="cmd" data-copy="/help">/help</span></td>
+                        <td class="desc">Show all commands</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="/clear">/clear</span></td>
+                        <td class="desc">Clear conversation</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="/model sonnet">/model sonnet</span></td>
+                        <td class="desc">Switch to Sonnet</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="/model opus">/model opus</span></td>
+                        <td class="desc">Switch to Opus</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="/cost">/cost</span></td>
+                        <td class="desc">Show session cost</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="/compact">/compact</span></td>
+                        <td class="desc">Compress history</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="/exit">/exit</span></td>
+                        <td class="desc">Exit Claude Code</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Modes -->
+            <div class="card">
+                <h2>🎚️ Modes</h2>
+                <table>
+                    <tr>
+                        <td><span class="mode-badge mode-normal">Normal</span></td>
+                        <td class="desc">Ask before actions (default)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="mode-badge mode-auto">Auto</span></td>
+                        <td class="desc">Auto-approve safe actions</td>
+                    </tr>
+                    <tr>
+                        <td><span class="mode-badge mode-plan">Plan</span></td>
+                        <td class="desc">Planning only, no file changes</td>
+                    </tr>
+                </table>
+                <p style="margin-top: 15px; color: #888; font-size: 0.85rem;">
+                    Press <span class="key">Shift+Tab</span> to cycle
+                </p>
+            </div>
+
+            <!-- Git Commands -->
+            <div class="card">
+                <h2>📦 Git Commands</h2>
+                <table>
+                    <tr>
+                        <td><span class="cmd" data-copy="git status">git status</span></td>
+                        <td class="desc">Check current state</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="git add .">git add .</span></td>
+                        <td class="desc">Stage all changes</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="git commit -m &quot;&quot;">git commit -m ""</span></td>
+                        <td class="desc">Save snapshot</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="git checkout .">git checkout .</span></td>
+                        <td class="desc">Undo all changes</td>
+                    </tr>
+                    <tr>
+                        <td><span class="cmd" data-copy="git log --oneline">git log --oneline</span></td>
+                        <td class="desc">View history</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Tips -->
+            <div class="card tips">
+                <h2>💡 Pro Tips</h2>
+                <table>
+                    <tr>
+                        <td><span class="cmd" data-copy="@">@filename</span></td>
+                        <td class="desc">Reference specific file</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="desc" style="padding-top: 10px;">
+                            <span class="key">Ctrl+V</span> = Paste screenshot for analysis
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="desc">
+                            <span class="highlight">CLAUDE.md</span> = Auto-loaded instructions
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="desc">
+                            Use <span class="cmd" data-copy="/clear">/clear</span> between tasks to save tokens
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Useful Prompts -->
+            <div class="card">
+                <h2>🗣️ Useful Prompts (Click to copy full text)</h2>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <span class="cmd" data-copy="このプロジェクトの構造を説明して" style="white-space: nowrap;">このプロジェクトの構造を説明して</span>
+                    <span class="cmd" data-copy="このエラーを直して" style="white-space: nowrap;">このエラーを直して</span>
+                    <span class="cmd" data-copy="テストを書いて" style="white-space: nowrap;">テストを書いて</span>
+                    <span class="cmd" data-copy="コードをリファクタリングして" style="white-space: nowrap;">コードをリファクタリングして</span>
+                    <span class="cmd" data-copy="変更をコミットして" style="white-space: nowrap;">変更をコミットして</span>
+                    <span class="cmd" data-copy="docstringを追加して" style="white-space: nowrap;">docstringを追加して</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Claude Code Cheat Sheet | 📋 Green commands are copyable!
+        </footer>
+    </div>
+
+    <div class="toast" id="toast">📋 Copied!</div>
+
+    <script>
+        document.querySelectorAll('.cmd[data-copy]').forEach(el => {
+            el.addEventListener('click', () => {
+                const text = el.getAttribute('data-copy');
+                navigator.clipboard.writeText(text).then(() => {
+                    const toast = document.getElementById('toast');
+                    toast.textContent = `📋 Copied: ${text}`;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 1500);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
