@@ -13,11 +13,11 @@ Write-Host "  Claude Code Launcher" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Open cheatsheet in browser
-$cheatsheetPath = Join-Path $scriptDir "cheatsheet.html"
-if (Test-Path $cheatsheetPath) {
-    Write-Host "[0/4] Opening cheatsheet..." -ForegroundColor Magenta
-    Start-Process $cheatsheetPath
+# Open launcher in browser (Cheatsheet tab)
+$launcherPath = Join-Path $scriptDir "launcher.html"
+if (Test-Path $launcherPath) {
+    Write-Host "[0/4] Opening launcher..." -ForegroundColor Magenta
+    Start-Process "$launcherPath`#cheatsheet"
 }
 
 # Folder selection dialog

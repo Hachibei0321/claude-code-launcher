@@ -13,12 +13,14 @@ Claude Code CLIを初心者でも簡単に使えるようにするランチャ�
 
 ## ✨ 特徴
 
+- 🎮 **統合ランチャー** - 全ツールにここからアクセス
 - 🖱️ **ダブルクリックで起動** - コマンド入力不要
 - 📁 **フォルダ選択ダイアログ** - GUIで直感的に選択
 - 🔄 **Git自動設定** - 無ければ自動で初期化
-- 💾 **自動バックアップ** - 作業前に自動コミット
-- 📋 **チートシート付き** - コマンド一覧がブラウザで開く
-- 🎨 **おしゃれなUI** - クリックでコマンドをコピー
+- 💾 **自動バックアップ** - 作業前・作業後に自動保存
+- 📋 **チートシート付き** - コマンド一覧が常に手元に
+- 🔄 **モード切替** - Claude(Anthropic) / GLM(Z.AI) をワンクリック切替
+- 🎨 **おしゃれなUI** - ダークモードで目に優しい
 
 ---
 
@@ -59,15 +61,19 @@ Copy-Item ".\global_claude_config\*" "$env:USERPROFILE\.claude\" -Force
 
 ## 🚀 使い方
 
-### `Claude起動.bat` をダブルクリック！
+### `Claudeランチャー.bat` をダブルクリック！
 
-それだけです。
+メニューが開きます。そこから好きなツールを選んでください：
 
-1. 📋 チートシートがブラウザで開く
-2. 📁 フォルダ選択ダイアログが表示
-3. 🔄 Gitが無ければ自動初期化
-4. 💾 現在の状態を自動コミット
-5. 🤖 Claude Code (Sonnet) が起動！
+1. **🚀 Claude 起動** - Setup & Start
+2. **✅ 作業終了** - Commit & Save
+3. **📁 新規プロジェクト** - init & CLAUDE.md
+4. **💾 自動バックアップ** - Backup all projects
+5. **🔄 モード切替** - Switch API
+
+### チートシート
+
+ランチャーの上部タブ「📋 チートシート」をクリックすると表示されます。
 
 ---
 
@@ -75,49 +81,30 @@ Copy-Item ".\global_claude_config\*" "$env:USERPROFILE\.claude\" -Force
 
 ```
 claude-code-launcher/
-├── Claude起動.bat              # ← これをダブルクリック！
-├── start_claude_with_dialog.ps1  # メインスクリプト
-├── cheatsheet.html              # ショートカット一覧（ブラウザ表示）
-├── global_claude_config/        # グローバル設定テンプレート
-│   ├── CLAUDE.md               # Claude Codeへの共通指示
-│   └── settings.json           # 権限設定
-└── README.md                    # このファイル
+├── Claudeランチャー.bat       # ← メインメニューにはこれ！
+├── launcher.html             # UI本体（ブラウザ表示）
+├── Claude起動.bat            # 直接起動用
+├── 作業終了.bat              # 終了用ツール
+├── 新規プロジェクト.bat       # 新規作成ツール
+├── 自動バックアップ.bat      # バックアップツール
+├── モード切替.bat            # API切替ツール
+├── start_claude_with_dialog.ps1
+├── global_claude_config/     # 設定テンプレート
+├── mode_configs/             # モード定義
+└── README.md                 # このファイル
 ```
 
 ---
 
-## 📋 チートシート機能
+## ⚙️ よくある質問
 
-起動と同時にブラウザでチートシートが開きます。
+### Q. GLMモードを使うには？
+1. ランチャーから「モード切替」を選択
+2. 初回は「GLM」を押すとAPIキーの設定方法が表示されます
+3. `mode_configs\settings_glm.json` にAPIキーを入力してください
 
-- **キーボードショートカット** - 見るだけ
-- **スラッシュコマンド** - クリックでコピー → Ctrl+Vで貼り付け
-- **Gitコマンド** - クリックでコピー
-- **よく使うプロンプト** - 日本語でそのままコピー
-
----
-
-## ⚙️ カスタマイズ
-
-### モデルを変更したい場合
-
-`start_claude_with_dialog.ps1` の最後の行を編集：
-
-```powershell
-# Sonnet (デフォルト・バランス型)
-claude --model sonnet
-
-# Opus (高精度・枠消費大)
-claude --model opus
-```
-
-### デフォルトフォルダを変更したい場合
-
-`start_claude_with_dialog.ps1` の `SelectedPath` を編集：
-
-```powershell
-$folderBrowser.SelectedPath = "C:\Your\Default\Path"
-```
+### Q. 自動バックアップを定期実行したい
+Windowsのタスクスケジューラに `auto_backup.ps1` を登録すると、毎日自動でバックアップできます。
 
 ---
 
@@ -126,7 +113,7 @@ $folderBrowser.SelectedPath = "C:\Your\Default\Path"
 Issue や Pull Request 歓迎です！
 
 特に以下の改善を募集中：
-- [ ] Mac/Linux対応
+- [ ] Mac/Linux対応（シェルスクリプト版）
 - [ ] 多言語対応
 - [ ] より多くのプロンプトテンプレート
 

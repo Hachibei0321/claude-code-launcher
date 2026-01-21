@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Launcher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Launcher Grid */
+        .launcher-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .launcher-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .launcher-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(233, 69, 96, 0.5);
+        }
+
+        .launcher-card .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .launcher-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .launcher-card p {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .launcher-card.primary {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.3), rgba(255, 107, 107, 0.1));
+            border-color: rgba(233, 69, 96, 0.5);
+        }
+
+        .launcher-card.success {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.1));
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        .launcher-card.warning {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(255, 152, 0, 0.1));
+            border-color: rgba(255, 152, 0, 0.5);
+        }
+
+        .launcher-card.info {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.3), rgba(33, 150, 243, 0.1));
+            border-color: rgba(33, 150, 243, 0.5);
+        }
+
+        .launcher-card.purple {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.3), rgba(156, 39, 176, 0.1));
+            border-color: rgba(156, 39, 176, 0.5);
+        }
+
+        /* Cheatsheet styles (from original) */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(233, 69, 96, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e94560;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 10px 5px;
+            vertical-align: top;
+        }
+
+        .key {
+            background: linear-gradient(145deg, #2a2a4a, #1a1a3a);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #ff6b6b;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cmd {
+            background: linear-gradient(145deg, #2a2a4a, #1a1a3a);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #4CAF50;
+            display: inline-block;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cmd::before {
+            content: "📋";
+            margin-right: 5px;
+            font-size: 0.75rem;
+        }
+
+        .cmd:hover {
+            background: linear-gradient(145deg, #3a3a5a, #2a2a4a);
+            transform: scale(1.05);
+        }
+
+        .desc {
+            color: #c0c0c0;
+            font-size: 0.9rem;
+        }
+
+        .mode-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .mode-normal {
+            background: #4CAF50;
+        }
+
+        .mode-auto {
+            background: #FF9800;
+        }
+
+        .mode-plan {
+            background: #2196F3;
+        }
+
+        .tips {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(255, 107, 107, 0.1));
+            border-left: 4px solid #e94560;
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #606060;
+            font-size: 0.85rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Note box */
+        .note-box {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .note-box p {
+            color: #ffb74d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Claude Code Launcher</h1>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('launcher')">🎮 ランチャー</button>
+            <button class="tab-btn" onclick="switchTab('cheatsheet')">📋 チートシート</button>
+        </div>
+
+        <!-- Launcher Tab -->
+        <div id="launcher" class="tab-content active">
+            <div class="launcher-grid">
+                <div class="launcher-card primary" onclick="showCommand('Claude起動.bat')">
+                    <div class="icon">🚀</div>
+                    <h3>Claude 起動</h3>
+                    <p>フォルダ選択 → Git自動設定 → Claude Code開始</p>
+                </div>
+
+                <div class="launcher-card success" onclick="showCommand('作業終了.bat')">
+                    <div class="icon">✅</div>
+                    <h3>作業終了</h3>
+                    <p>変更をコミットして保存</p>
+                </div>
+
+                <div class="launcher-card info" onclick="showCommand('新規プロジェクト.bat')">
+                    <div class="icon">📁</div>
+                    <h3>新規プロジェクト</h3>
+                    <p>CLAUDE.md + Git初期化</p>
+                </div>
+
+                <div class="launcher-card warning" onclick="showCommand('自動バックアップ.bat')">
+                    <div class="icon">💾</div>
+                    <h3>自動バックアップ</h3>
+                    <p>全プロジェクトをGitHubに保存</p>
+                </div>
+
+                <div class="launcher-card purple" onclick="showCommand('モード切替.bat')">
+                    <div class="icon">🔄</div>
+                    <h3>モード切替</h3>
+                    <p>Claude ⇄ GLM 切り替え</p>
+                </div>
+            </div>
+
+            <div class="note-box">
+                <p>⚠️ ブラウザからは直接.batファイルを実行できません。<br>
+                    上のカードをクリックすると、実行するファイル名が表示されます。<br>
+                    エクスプローラーで該当ファイルをダブルクリックしてください。</p>
+            </div>
+        </div>
+
+        <!-- Cheatsheet Tab -->
+        <div id="cheatsheet" class="tab-content">
+            <div class="grid">
+                <!-- Keyboard Shortcuts -->
+                <div class="card">
+                    <h2>⌨️ Keyboard Shortcuts</h2>
+                    <table>
+                        <tr>
+                            <td><span class="key">Shift+Tab</span></td>
+                            <td class="desc">Mode switch (Normal→Auto→Plan)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="key">Ctrl+C</span></td>
+                            <td class="desc">Cancel (2x to exit)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="key">Ctrl+L</span></td>
+                            <td class="desc">Clear screen</td>
+                        </tr>
+                        <tr>
+                            <td><span class="key">Ctrl+V</span></td>
+                            <td class="desc">Paste image/screenshot</td>
+                        </tr>
+                        <tr>
+                            <td><span class="key">Ctrl+R</span></td>
+                            <td class="desc">Search history</td>
+                        </tr>
+                        <tr>
+                            <td><span class="key">Esc Esc</span></td>
+                            <td class="desc">Rewind conversation</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Slash Commands -->
+                <div class="card">
+                    <h2>💬 Slash Commands</h2>
+                    <table>
+                        <tr>
+                            <td><span class="cmd" data-copy="/help">/help</span></td>
+                            <td class="desc">Show all commands</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cmd" data-copy="/clear">/clear</span></td>
+                            <td class="desc">Clear conversation</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cmd" data-copy="/model sonnet">/model sonnet</span></td>
+                            <td class="desc">Switch to Sonnet</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cmd" data-copy="/model opus">/model opus</span></td>
+                            <td class="desc">Switch to Opus</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cmd" data-copy="/cost">/cost</span></td>
+                            <td class="desc">Show session cost</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cmd" data-copy="/compact">/compact</span></td>
+                            <td class="desc">Compress history</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Modes -->
+                <div class="card">
+                    <h2>🎚️ Modes</h2>
+                    <table>
+                        <tr>
+                            <td><span class="mode-badge mode-normal">Normal</span></td>
+                            <td class="desc">Ask before actions (default)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="mode-badge mode-auto">Auto</span></td>
+                            <td class="desc">Auto-approve safe actions</td>
+                        </tr>
+                        <tr>
+                            <td><span class="mode-badge mode-plan">Plan</span></td>
+                            <td class="desc">Planning only, no file changes</td>
+                        </tr>
+                    </table>
+                    <p style="margin-top: 15px; color: #888; font-size: 0.85rem;">
+                        Press <span class="key">Shift+Tab</span> to cycle
+                    </p>
+                </div>
+
+                <!-- Git Commands -->
+                <div class="card">
+                    <h2>📦 Git Commands</h2>
+                    <table>
+                        <tr>
+                            <td><span class="cmd" data-copy="git status">git status</span></td>
+                            <td class="desc">Check current state</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cmd" data-copy="git add .">git add .</span></td>
+                            <td class="desc">Stage all changes</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cmd" data-copy="git commit -m &quot;&quot;">git commit -m ""</span></td>
+                            <td class="desc">Save snapshot</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cmd" data-copy="git checkout .">git checkout .</span></td>
+                            <td class="desc">Undo all changes</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cmd" data-copy="git log --oneline">git log --oneline</span></td>
+                            <td class="desc">View history</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Basic Prompts -->
+                <div class="card">
+                    <h2>🗣️ Basic Prompts</h2>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <span class="cmd" data-copy="このプロジェクトの構造を説明して">このプロジェクトの構造を説明して</span>
+                        <span class="cmd" data-copy="このファイルの役割を説明して">このファイルの役割を説明して</span>
+                        <span class="cmd" data-copy="この関数は何をしている？">この関数は何をしている？</span>
+                        <span class="cmd" data-copy="変更をコミットして">変更をコミットして</span>
+                    </div>
+                </div>
+
+                <!-- Debug Prompts -->
+                <div class="card">
+                    <h2>🐛 Debug Prompts</h2>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <span class="cmd" data-copy="このエラーを直して">このエラーを直して</span>
+                        <span class="cmd" data-copy="なぜこのエラーが出るの？">なぜこのエラーが出るの？</span>
+                        <span class="cmd" data-copy="デバッグ用のprint文を追加して">デバッグ用のprint文を追加して</span>
+                        <span class="cmd" data-copy="エラーハンドリングを追加して">エラーハンドリングを追加して</span>
+                    </div>
+                </div>
+
+                <!-- Documentation Prompts -->
+                <div class="card">
+                    <h2>📝 Documentation Prompts</h2>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <span class="cmd" data-copy="docstringを追加して">docstringを追加して</span>
+                        <span class="cmd" data-copy="README.mdを作成して">README.mdを作成して</span>
+                        <span class="cmd" data-copy="コメントを日本語で追加して">コメントを日本語で追加して</span>
+                        <span class="cmd" data-copy="使い方の例を書いて">使い方の例を書いて</span>
+                    </div>
+                </div>
+
+                <!-- Refactoring Prompts -->
+                <div class="card">
+                    <h2>🔧 Refactoring Prompts</h2>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <span class="cmd" data-copy="コードをリファクタリングして">コードをリファクタリングして</span>
+                        <span class="cmd" data-copy="この関数を分割して">この関数を分割して</span>
+                        <span class="cmd" data-copy="重複コードをまとめて">重複コードをまとめて</span>
+                        <span class="cmd" data-copy="型ヒントを追加して">型ヒントを追加して</span>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="card tips">
+                    <h2>💡 Pro Tips</h2>
+                    <table>
+                        <tr>
+                            <td><span class="cmd" data-copy="@">@filename</span></td>
+                            <td class="desc">Reference specific file</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="desc" style="padding-top: 10px;">
+                                <span class="key">Ctrl+V</span> = Paste screenshot for analysis
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="desc">
+                                <span class="highlight">CLAUDE.md</span> = Auto-loaded instructions
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Claude Code Launcher | 📋 Green commands are copyable!
+        </footer>
+    </div>
+
+    <div class="toast" id="toast">📋 Copied!</div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            const content = document.getElementById(tabName);
+            const btn = document.querySelector(`button[onclick="switchTab('${tabName}')"]`);
+
+            if (content) content.classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        // Check hash on load
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash && (hash === 'launcher' || hash === 'cheatsheet')) {
+                switchTab(hash);
+            }
+        });
+
+        // Show command to run
+        function showCommand(filename) {
+            const toast = document.getElementById('toast');
+            toast.textContent = `▶️ Run: ${filename}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Copy to clipboard
+        document.querySelectorAll('.cmd[data-copy]').forEach(el => {
+            el.addEventListener('click', () => {
+                const text = el.getAttribute('data-copy');
+                navigator.clipboard.writeText(text).then(() => {
+                    const toast = document.getElementById('toast');
+                    toast.textContent = `📋 Copied: ${text}`;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 1500);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
